@@ -1,0 +1,24 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: retail-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: retail_pricing
+      POSTGRES_USER: retail_user
+      POSTGRES_PASSWORD: retail_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: retail-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
