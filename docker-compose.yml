@@ -1,5 +1,19 @@
 services:
 
+  backend:
+    build:
+      context: ./backend
+    container_name: retail-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://retail_user:retail_password@postgres:5432/retail_pricing
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+
   postgres:
     image: postgres:16
     container_name: retail-postgres
