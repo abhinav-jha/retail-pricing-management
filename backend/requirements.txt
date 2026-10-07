@@ -5,3 +5,6 @@ psycopg[binary]
 pydantic
 pydantic-settings
 python-multipart
+celery
+redis
+httpx

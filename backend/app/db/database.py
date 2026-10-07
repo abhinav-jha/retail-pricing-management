@@ -1,15 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-DATABASE_URL = (
-    "postgresql+psycopg://"
-    "retail_user:retail_password@localhost:5432/retail_pricing"
-)
+from app.core.config import settings
+
 
 engine = create_engine(
-    DATABASE_URL,
+    settings.DATABASE_URL,
     pool_pre_ping=True,
 )
+
 
 SessionLocal = sessionmaker(
     bind=engine,

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retail Pricing Management</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Retail operations</p>
+        <h1>Retail Pricing Management</h1>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <h2>Upload pricing feed</h2>
+        <form id="uploadForm" class="stack">
+          <label class="file-picker">
+            <span>CSV file</span>
+            <input id="csvFile" type="file" accept=".csv" required />
+          </label>
+          <button type="submit">Upload and import</button>
+        </form>
+        <div id="uploadStatus" class="status" aria-live="polite"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Search pricing</h2>
+        <form id="searchForm" class="search-grid">
+          <input id="storeId" type="text" placeholder="Store ID" />
+          <input id="sku" type="text" placeholder="SKU" />
+          <input id="productName" type="text" placeholder="Product name" />
+          <input id="priceDate" type="date" />
+          <button type="submit">Search</button>
+        </form>
+      </section>
+
+      <section class="panel wide">
+        <div class="table-header">
+          <h2>Pricing records</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Store</th>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Date</th>
+                <th>Version</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pricingTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
