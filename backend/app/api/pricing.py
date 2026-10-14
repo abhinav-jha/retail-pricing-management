@@ -81,11 +81,7 @@ async def upload_pricing_csv(
 
 
 @router.get(
-    "/imports/{job_id}",
-    response_model=ImportJobResponse,
-)
-@router.get(
-    "/jobs/{job_id}",
+    "/csv_imports_status/{job_id}",
     response_model=ImportJobResponse,
 )
 def get_import_status(
@@ -99,7 +95,6 @@ def get_import_status(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Import job not found",
         )
-
     return job
 
 
@@ -158,6 +153,17 @@ def update_pricing(
     pricing_data: PricingUpdate,
     db: Session = Depends(get_db),
 ):
+    existing_pricing = pricing_service.repository.get_by_id(
+        db=db,
+        pricing_id=pricing_id,
+    )
+
+    if existing_pricing is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pricing record not found",
+        )
+
     pricing = pricing_service.update_price(
         db=db,
         pricing_id=pricing_id,
@@ -167,7 +173,6 @@ def update_pricing(
     if pricing is None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Pricing record was modified by another user or does not exist",
+            detail="Pricing record was modified by another user",
         )
-
     return pricing

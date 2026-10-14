@@ -9,6 +9,9 @@ from app.core.config import settings
 from app.db.database import SessionLocal
 from app.models.import_job import ImportJob
 from app.models.pricing import Pricing
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 celery_app = Celery(
@@ -32,14 +35,14 @@ def process_csv_import(file_path: str, import_id: Optional[int] = None) -> dict:
     session = SessionLocal()
     job = None
 
-    if import_id is not None:
-        job = session.get(ImportJob, import_id)
-        if job is not None:
-            job.status = "processing"
-            job.error_message = None
-            session.commit()
-
     try:
+        if import_id is not None:
+            job = session.get(ImportJob, import_id)
+            if job is not None:
+                job.status = "processing"
+                job.error_message = None
+                session.commit()
+
         with open(file_path, newline="", encoding="utf-8-sig") as csv_file:
             reader = csv.DictReader(csv_file)
             expected_columns = ["Store ID", "SKU", "Product Name", "Price", "Date"]
@@ -107,17 +110,28 @@ def process_csv_import(file_path: str, import_id: Optional[int] = None) -> dict:
                 "import_id": import_id,
                 "processed_rows": processed,
             }
+
     except Exception as error:
         session.rollback()
-        if job is not None:
-            job.status = "failed"
-            job.error_message = str(error)[:500]
-            session.commit()
-        return {
-            "status": "failed",
-            "file_path": file_path,
-            "import_id": import_id,
-            "error": str(error),
-        }
+
+        try:
+            if import_id is not None:
+                failed_job = session.get(ImportJob, import_id)
+
+                if failed_job is not None:
+                    failed_job.status = "failed"
+                    failed_job.error_message = str(error)[:500]
+                    session.commit()
+
+        except Exception:
+            session.rollback()
+            logger.exception(
+                "Failed to update import job status. import_id=%s",
+                import_id,
+            )
+
+        raise
+
     finally:
         session.close()
+
