@@ -69,7 +69,7 @@ async function pollImportStatus(jobId) {
   const maxAttempts = 20;
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    const response = await fetch(`${API_BASE}/jobs/${jobId}`);
+    const response = await fetch(`${API_BASE}/csv_imports_status/${jobId}`);
 
     if (!response.ok) {
       throw new Error("Unable to check import job status");
